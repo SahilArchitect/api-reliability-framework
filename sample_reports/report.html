@@ -1,0 +1,78 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>API Reliability Report</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; margin: 32px; background: #f7f7f8; color: #1f2937; }
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 14px; padding: 20px; margin-bottom: 18px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    .summary { display: flex; gap: 16px; flex-wrap: wrap; }
+    .metric { min-width: 120px; padding: 16px; border-radius: 12px; background: #f3f4f6; }
+    .passed { color: #166534; font-weight: 700; }
+    .failed { color: #991b1b; font-weight: 700; }
+    code, pre { background: #111827; color: #f9fafb; padding: 12px; border-radius: 10px; overflow: auto; display: block; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { text-align: left; border-bottom: 1px solid #e5e7eb; padding: 10px; vertical-align: top; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 999px; background: #e5e7eb; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>API Reliability Report</h1>
+  <div class="card">
+    <h2>Sample Failure Report</h2>
+    <p>Static sample showing failure classification and defect summary.</p>
+    <p><strong>Generated:</strong> 2026-06-26T12:03:27.319700+00:00</p>
+  </div>
+  <div class="summary card">
+    <div class="metric"><strong>Total</strong><br>1</div>
+    <div class="metric"><strong>Passed</strong><br><span class="passed">0</span></div>
+    <div class="metric"><strong>Failed</strong><br><span class="failed">1</span></div>
+  </div>
+  
+  <div class="card">
+    <h2>sample_db_mismatch - Create order but DB status mismatch</h2>
+    <p>
+      <span class="badge">POST /orders</span>
+      <span class="failed">FAILED</span>
+      <span class="badge">DB_MISMATCH</span>
+      <span class="badge">184.2 ms</span>
+    </p>
+    <table>
+      <thead><tr><th>Check</th><th>Status</th><th>Message</th><th>Expected</th><th>Observed</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td>status_code</td>
+          <td><span class="passed">PASS</span></td>
+          <td>Status code matched</td>
+          <td>201</td>
+          <td>201</td>
+        </tr>
+        
+        <tr>
+          <td>db:Verify order status:status</td>
+          <td><span class="failed">FAIL</span></td>
+          <td>Expected DB column status='created', observed 'pending'</td>
+          <td>created</td>
+          <td>pending</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+    <h3>Automatic defect summary</h3>
+    <pre>Title: [DB_MISMATCH] sample_db_mismatch - Create order but DB status mismatch
+Severity: High
+Observed: Expected DB column status='created', observed 'pending'
+Expected: Expected 'created'.
+Repro Steps:
+1. POST /orders with configured headers/body/query parameters.
+2. Validate HTTP response against the suite expectations.
+Likely owner: Backend/API + Database team</pre>
+    
+  </div>
+  
+</body>
+</html>
+        

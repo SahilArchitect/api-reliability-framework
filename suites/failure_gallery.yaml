@@ -1,0 +1,50 @@
+name: Failure Gallery Suite
+version: "1.0"
+description: Intentionally failing examples to demonstrate classification and defect reporting.
+tags: [demo, failures]
+
+cases:
+  - id: demo_auth_failure
+    name: Missing auth should be classified as auth failure
+    method: GET
+    path: /auth/check
+    expected:
+      status_code: 200
+
+  - id: demo_validation_failure
+    name: Wrong expected response field should be validation failure
+    method: GET
+    path: /health
+    expected:
+      status_code: 200
+      json:
+        status: broken-on-purpose
+
+  - id: demo_db_mismatch
+    name: Created order but wrong DB expectation should be DB mismatch
+    method: POST
+    path: /orders
+    headers:
+      Authorization: "Bearer ${AUTH_TOKEN}"
+    json:
+      order_id: "failure-${RUN_ID}"
+      customer_email: "failure@example.com"
+      amount: 500
+      status: created
+    expected:
+      status_code: 201
+    db:
+      - name: Force wrong status expectation
+        query: "select status from orders where order_id = %(order_id)s"
+        params:
+          order_id: "failure-${RUN_ID}"
+        expect_one:
+          status: cancelled
+
+  - id: demo_timeout
+    name: Slow endpoint should be classified as timeout
+    method: GET
+    path: /slow?seconds=3
+    timeout_seconds: 1
+    expected:
+      status_code: 200

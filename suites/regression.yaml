@@ -1,0 +1,43 @@
+name: Regression Suite
+version: "1.0"
+description: Broader checks for auth, duplicate handling, lookup, and slow endpoint behavior.
+tags: [regression, api, db]
+
+cases:
+  - id: health_check_regression
+    name: Health check
+    method: GET
+    path: /health
+    expected:
+      status_code: 200
+      json:
+        status: ok
+
+  - id: auth_check_success
+    name: Authenticated endpoint accepts valid token
+    method: GET
+    path: /auth/check
+    headers:
+      Authorization: "Bearer ${AUTH_TOKEN}"
+    expected:
+      status_code: 200
+      json:
+        authenticated: true
+
+  - id: auth_check_rejects_missing_token
+    name: Authenticated endpoint rejects missing token
+    method: GET
+    path: /auth/check
+    expected:
+      status_code: 401
+      json:
+        detail: Missing bearer token
+
+  - id: slow_endpoint_within_timeout
+    name: Slow endpoint still succeeds inside configured timeout
+    method: GET
+    path: /slow?seconds=1
+    expected:
+      status_code: 200
+      json:
+        slept_seconds: 1

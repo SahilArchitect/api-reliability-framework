@@ -1,0 +1,57 @@
+{
+  "suite": {
+    "name": "Sample Failure Report",
+    "version": "1.0",
+    "description": "Static sample showing failure classification and defect summary.",
+    "tags": [
+      "sample"
+    ]
+  },
+  "generated_at": "2026-06-26T12:03:27.319700+00:00",
+  "summary": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "failure_DB_MISMATCH": 1
+  },
+  "results": [
+    {
+      "case_id": "sample_db_mismatch",
+      "case_name": "Create order but DB status mismatch",
+      "method": "POST",
+      "path": "/orders",
+      "passed": false,
+      "duration_ms": 184.2,
+      "failure_type": "DB_MISMATCH",
+      "checks": [
+        {
+          "name": "status_code",
+          "passed": true,
+          "message": "Status code matched",
+          "failure_type": null,
+          "expected": 201,
+          "observed": 201
+        },
+        {
+          "name": "db:Verify order status:status",
+          "passed": false,
+          "message": "Expected DB column status='created', observed 'pending'",
+          "failure_type": "DB_MISMATCH",
+          "expected": "created",
+          "observed": "pending"
+        }
+      ],
+      "api": {
+        "status_code": 201,
+        "elapsed_ms": 112.5,
+        "body": {
+          "order_id": "sample-1",
+          "status": "created"
+        },
+        "headers": {},
+        "error": null
+      },
+      "defect_summary": "Title: [DB_MISMATCH] sample_db_mismatch - Create order but DB status mismatch\nSeverity: High\nObserved: Expected DB column status='created', observed 'pending'\nExpected: Expected 'created'.\nRepro Steps:\n1. POST /orders with configured headers/body/query parameters.\n2. Validate HTTP response against the suite expectations.\nLikely owner: Backend/API + Database team"
+    }
+  ]
+}

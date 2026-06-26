@@ -1,0 +1,87 @@
+name: Smoke Suite
+version: "1.0"
+description: Validates core order APIs and PostgreSQL side effects.
+tags: [smoke, api, db]
+
+cases:
+  - id: health_check
+    name: API health check
+    method: GET
+    path: /health
+    expected:
+      status_code: 200
+      json:
+        status: ok
+      required_fields: [status, database]
+
+  - id: create_order_success
+    name: Create order and verify PostgreSQL row
+    method: POST
+    path: /orders
+    headers:
+      Authorization: "Bearer ${AUTH_TOKEN}"
+    json:
+      order_id: "${ORDER_ID}"
+      customer_email: "${CUSTOMER_EMAIL}"
+      amount: 1299.50
+      status: created
+    expected:
+      status_code: 201
+      json:
+        order_id: "${ORDER_ID}"
+        status: created
+      json_paths:
+        - path: "$.amount"
+          equals: 1299.5
+        - path: "$.customer_email"
+          equals: "${CUSTOMER_EMAIL}"
+      required_fields: [order_id, customer_email, amount, status]
+    db:
+      - name: Verify order row exists
+        query: "select status, amount, customer_email from orders where order_id = %(order_id)s"
+        params:
+          order_id: "${ORDER_ID}"
+        expect_one:
+          status: created
+          amount: 1299.5
+          customer_email: "${CUSTOMER_EMAIL}"
+
+  - id: get_order_success
+    name: Fetch created order
+    method: GET
+    path: /orders/${ORDER_ID}
+    headers:
+      Authorization: "Bearer ${AUTH_TOKEN}"
+    expected:
+      status_code: 200
+      json:
+        order_id: "${ORDER_ID}"
+        customer_email: "${CUSTOMER_EMAIL}"
+        status: created
+
+  - id: update_order_status_success
+    name: Update order status and verify audit log
+    method: PATCH
+    path: /orders/${ORDER_ID}/status
+    headers:
+      Authorization: "Bearer ${AUTH_TOKEN}"
+    json:
+      status: shipped
+    expected:
+      status_code: 200
+      json:
+        order_id: "${ORDER_ID}"
+        status: shipped
+    db:
+      - name: Verify order status updated
+        query: "select status from orders where order_id = %(order_id)s"
+        params:
+          order_id: "${ORDER_ID}"
+        expect_one:
+          status: shipped
+      - name: Verify audit event created
+        query: "select event_type from order_audit where order_id = %(order_id)s order by id desc limit 1"
+        params:
+          order_id: "${ORDER_ID}"
+        expect_one:
+          event_type: status_changed

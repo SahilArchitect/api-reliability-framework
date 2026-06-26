@@ -1,0 +1,21 @@
+{
+  "name": "JSON Health Suite",
+  "version": "1.0",
+  "description": "Minimal JSON-defined suite proving that the framework supports JSON test cases too.",
+  "tags": ["json", "health"],
+  "cases": [
+    {
+      "id": "json_health_check",
+      "name": "Health check from JSON suite",
+      "method": "GET",
+      "path": "/health",
+      "expected": {
+        "status_code": 200,
+        "json": {
+          "status": "ok"
+        },
+        "required_fields": ["status", "database"]
+      }
+    }
+  ]
+}
