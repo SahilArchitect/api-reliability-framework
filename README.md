@@ -248,12 +248,6 @@ File:
 .github/workflows/ci.yml
 ```
 
-## Resume bullets
-
-- Built a Python-based API test automation framework using pytest, YAML test definitions, PostgreSQL validation, structured logging, retry logic, and CI execution.
-- Implemented automated REST API testing with response assertions, database state checks, failure classification, and JSON/HTML report generation.
-- Designed a CLI-driven test runner with configurable environments, reusable validators, and GitHub Actions integration for continuous testing.
-
 ## Troubleshooting
 
 ### Docker credential error on macOS
@@ -282,23 +276,3 @@ ports:
 ```
 
 Then update `configs/env.local.yaml` accordingly.
-
-## Suggested demo flow for interviews
-
-1. Show `suites/smoke.yaml` and explain declarative test cases.
-2. Run:
-
-```bash
-python -m runner run --suite smoke
-```
-
-3. Open `reports/report.html`.
-4. Run failure demo:
-
-```bash
-python -m runner run --suite failure_gallery
-```
-
-5. Show how failures are classified and defect summaries are generated.
-
-This makes the project useful for SDET and support roles, while still proving backend maturity. Apparently testing what you build is now a differentiator. Civilization limps onward.
